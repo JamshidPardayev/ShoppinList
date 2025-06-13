@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useNavStore } from "../../../store/useNavigate";
 import { useTheme } from "../../../store/useThem";
 import { useAuthStore } from "../../../store/useToken";
-
+import logo from "../../../assets/logo.png"
 const HeaderTop = () => {
   const { toggleIsNav } = useNavStore();
   const { isDark, toggleTheme } = useTheme();
@@ -11,7 +11,7 @@ const HeaderTop = () => {
   const { clearToken } = useAuthStore();
   const logOut = async () => {
     await clearToken();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -19,7 +19,7 @@ const HeaderTop = () => {
       <div className="left flex items-center h-full md:gap-[20px] md:w-[450px] md:justify-between">
         <Link to={"/profile"} className="flex items-center h-full w-full ">
           <div className="logo h-[50px] w-[50px]">
-            <img src="/logo.png" alt="logo" className="w-full h-full" />
+            <img src={logo} alt="logo" className="w-full h-full" />
           </div>
           <h2 className="font-bold text-nowrap text-violet-500 md:block hidden text-[25px]">
             Shop List
