@@ -1,16 +1,16 @@
 import { Archive, Files } from "lucide-react";
 import admin from "../../assets/admin.png";
 import { useUserStore } from "../../store/useUser";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useToken";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { API } from "../../hooks/getEnv";
 
-const Profile = () => {
+const Prifile = () => {
   const { user, clearUser } = useUserStore();
-  const { token, clearToken } = useAuthStore();
+  const { clearToken, token } = useAuthStore();
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,41 +29,43 @@ const Profile = () => {
     setIsModalOpen(true);
   };
 
-  const confirmDelete = async () => {
-    try {
-      setLoading(true);
+const confirmDelete = async () => {
+  try {
+    setLoading(true);
+    const response = await axios({
+      method: "delete",
+      url: `${API}/users`,
+      data: {
+        name: user?.name,
+        username: user?.username,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      const response = await axios.delete(`${API}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          username: user?.username,
-        },
-      });
-
-      if (response.status >= 200 && response.status < 300) {
-        clearUser();
-        clearToken();
-        localStorage.removeItem("token");
-        toast.success("Account deleted! 🗑️");
-        navigate("/login");
-      } else {
-        toast.error("Failed to delete account.");
-      }
-    } catch (error) {
-      toast.error("Error deleting account!");
-      console.error(error);
-    } finally {
-      setIsModalOpen(false);
-      setLoading(false);
+    if (response.status >= 200 && response.status < 300) {
+      clearUser();
+      clearToken();
+      localStorage.removeItem("token");
+      toast.success("Account deleted! 🗑️");
+      navigate("/login");
+    } else {
+      toast.error("Failed to delete account.");
     }
-  };
+  } catch (error) {
+    toast.error("Error deleting account!");
+  } finally {
+    setIsModalOpen(false);
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="w-[80%]">
       <div className="m-2 rounded-2xl p-4 w-full">
-        <div className="flex justify-between items-center">
+        <div className="flex gap-1 justify-between items-center">
           <h2 className="text-[36px] max-lg:text-[30px] font-semibold">
             Your Profile
           </h2>
@@ -105,8 +107,8 @@ const Profile = () => {
 
       {/* MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 w-[90%] max-w-[400px] shadow-xl text-center">
+        <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 opacity-90 flex justify-center items-center">
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-[400px] shadow-lg text-center">
             <h2 className="text-xl font-semibold text-red-600 mb-4">
               Are you sure?
             </h2>
@@ -135,4 +137,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Prifile;
